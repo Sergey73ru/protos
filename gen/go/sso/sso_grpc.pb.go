@@ -30,7 +30,7 @@ const (
 type AuthClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	IsAdmin(ctx context.Context, in *AdminRequest, opts ...grpc.CallOption) (*AdminRequest, error)
+	IsAdmin(ctx context.Context, in *AdminRequest, opts ...grpc.CallOption) (*AdminResponse, error)
 }
 
 type authClient struct {
@@ -61,9 +61,9 @@ func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.C
 	return out, nil
 }
 
-func (c *authClient) IsAdmin(ctx context.Context, in *AdminRequest, opts ...grpc.CallOption) (*AdminRequest, error) {
+func (c *authClient) IsAdmin(ctx context.Context, in *AdminRequest, opts ...grpc.CallOption) (*AdminResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AdminRequest)
+	out := new(AdminResponse)
 	err := c.cc.Invoke(ctx, Auth_IsAdmin_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (c *authClient) IsAdmin(ctx context.Context, in *AdminRequest, opts ...grpc
 type AuthServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	IsAdmin(context.Context, *AdminRequest) (*AdminRequest, error)
+	IsAdmin(context.Context, *AdminRequest) (*AdminResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -94,7 +94,7 @@ func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*Reg
 func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAuthServer) IsAdmin(context.Context, *AdminRequest) (*AdminRequest, error) {
+func (UnimplementedAuthServer) IsAdmin(context.Context, *AdminRequest) (*AdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsAdmin not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
